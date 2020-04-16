@@ -1,0 +1,9 @@
+[package]
+name = "rustcrypt"
+version = "0.1.0"
+authors = ["Benjamin Shanahan <benshanahan1@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
