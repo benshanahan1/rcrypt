@@ -1,24 +1,57 @@
-mod crypto;
+use structopt::StructOpt;
+use failure::ResultExt;
+use exitfailure::ExitFailure;
+use std::path::PathBuf;
+use std::fs;
 
-fn main() {
-    let msg = String::from("Hello, world!");
-    let key = String::from("secret");
+mod crypt;
 
-    let msg_bytes = crypto::string_to_bytes(&msg);
-    let key_bytes = crypto::string_to_bytes(&key);
+#[derive(Debug, StructOpt)]
+#[structopt(name = "rcrypt", about = "XOR encryption / decryption CLI.")]
+struct Opt {
+    /// Encrypt
+    #[structopt(short, long)]
+    encrypt: bool,
 
-    println!("Original key: {:?}", &key_bytes);
+    /// Decrypt
+    #[structopt(short, long)]
+    decrypt: bool,
 
-    let key_bytes_resized = crypto::resize_key(key_bytes, msg_bytes.len());
+    /// Key
+    #[structopt(name = "KEY")]
+    key: String,
+    
+    /// Input file path
+    #[structopt(name = "INPUT")]
+    input: PathBuf,
 
-    println!("Resized key: {:?}", &key_bytes_resized);
+    /// Output file path
+    #[structopt(name = "OUTPUT")]
+    output: PathBuf,
+}
 
-    let enc_msg = crypto::do_xor(&msg_bytes, &key_bytes_resized);
+fn main() -> Result<(), ExitFailure> {
+    let opt = Opt::from_args();
 
-    println!("Original message: {:?}", &msg_bytes);
-    println!("Encrypted message: {:?}", &enc_msg);
+    // Read input file into a string
+    let input_file_contents = fs::read_to_string(&opt.input.as_path())
+        .with_context(|_| format!("could not read file: {}", &opt.input.display()))?;
 
-    let dec_msg = crypto::do_xor(&enc_msg, &key_bytes_resized);
+    // Convert input and key strings to bytes vectors
+    let input_bytes = crypt::string_to_bytes(&input_file_contents);
+    let key_bytes = crypt::string_to_bytes(&opt.key);
 
-    println!("Decrypted message: {:?}", &dec_msg);
+    // Resize key to match length of input message
+    let key_bytes_resized = crypt::resize_key(key_bytes, input_bytes.len());
+
+    // Perform XOR encryption
+    let output_file_contents = crypt::do_xor(&input_bytes, &key_bytes_resized);
+
+    // Save output string to file
+    fs::write(&opt.output.as_path(), output_file_contents)
+        .with_context(|_| format!("failed to write output file: {}", &opt.output.display()))?;
+
+    println!("Created file: {}", &opt.output.display());
+
+    Ok(())
 }

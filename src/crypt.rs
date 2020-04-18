@@ -1,3 +1,8 @@
+use std::path::PathBuf;
+use std::io;
+use failure::ResultExt;
+use exitfailure::ExitFailure;
+
 /// Convert a string into a bytes vector.
 pub fn string_to_bytes(s: &String) -> Vec<u8> {
     return s.as_bytes().to_vec();
@@ -6,16 +11,20 @@ pub fn string_to_bytes(s: &String) -> Vec<u8> {
 /// Resize key.
 pub fn resize_key(mut key: Vec<u8>, msg_len: usize) -> Vec<u8> {
     let key_len = key.len();
-    if key_len > msg_len {
+    if key_len == msg_len {
+        // If key and msg are same length, return immediately
+        return key;
+    } else if key_len > msg_len {
+        // If key len is greater than msg len, truncate key
         key.truncate(msg_len);
     } else {
+        // If key len is less than msg len, repeat key enough times to exceed msg len, then
+        // truncate key
         let n_repeats = msg_len / key_len + 1;
-
         for _ in 0..n_repeats {
             let mut key_copy = key.to_vec();
             key.append(&mut key_copy);
         }
-
         key.truncate(msg_len);
     }
     return key;
