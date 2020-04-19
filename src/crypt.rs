@@ -15,13 +15,10 @@ pub fn resize_key(mut key: Vec<u8>, new_size: usize) -> Vec<u8> {
         // If key len is greater than msg len, truncate key
         key.truncate(new_size);
     } else {
-        // If key len is less than msg len, repeat key enough times to exceed msg len, then
-        // truncate key
+        // If key len is less than msg len, repeat key enough times to exceed
+        // msg len, then truncate key
         let n_repeats = new_size / key_len + 1;
-        for _ in 0..n_repeats {
-            let mut key_copy = key.to_vec();
-            key.append(&mut key_copy);
-        }
+        key = key[..].repeat(n_repeats);
         key.truncate(new_size);
     }
     return key;
