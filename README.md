@@ -2,23 +2,18 @@
 
 Simple XOR encryption CLI written in Rust.
 
-## Development
+## Install
 
-Build using `cargo`:
-
-```bash
-cargo build
-```
-
-Run with `cargo`:
+Clone the repo to your machine, build, and install with `cargo`:
 
 ```bash
-cargo run -- --help
+cargo install --path .
 ```
 
-This will output something on the order of:
+Usage:
 
 ```
+$ rcrypt --help
 rcrypt 0.1.0
 Benjamin Shanahan <benshanahan1@gmail.com>
 XOR encryption / decryption CLI.
@@ -38,16 +33,19 @@ ARGS:
     <OUTPUT>    Output file path
 ```
 
-## Release
+## Develop
+
+Build and run with `cargo`:
 
 ```bash
-cargo build --release
+cargo build
+cargo run -- --help
 ```
 
-Compiled binary is at './target/release/rcrypt'
+## Test
 
-To install the binary on your machine:
+Run unit and integration tests with `cargo`:
 
 ```bash
-cargo install --path .
+cargo test
 ```
