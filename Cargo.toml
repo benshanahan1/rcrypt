@@ -1,5 +1,5 @@
 [package]
-name = "rustcrypt"
+name = "rcrypt"
 version = "0.1.0"
 authors = ["Benjamin Shanahan <benshanahan1@gmail.com>"]
 edition = "2018"
@@ -10,3 +10,8 @@ edition = "2018"
 structopt = "0.2.10"
 failure = "0.1.5"
 exitfailure = "0.5.1"
+
+[dev-dependencies]
+assert_cmd = "0.10"
+predicates = "1"
+tempfile = "3"

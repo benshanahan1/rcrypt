@@ -1,14 +1,14 @@
-use structopt::StructOpt;
-use failure::ResultExt;
 use exitfailure::ExitFailure;
-use std::path::PathBuf;
+use failure::ResultExt;
 use std::fs;
+use std::path::PathBuf;
+use structopt::StructOpt;
 
 mod crypt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "rcrypt", about = "XOR encryption / decryption CLI.")]
-struct Opt {
+struct CliOpt {
     /// Encrypt
     #[structopt(short, long)]
     encrypt: bool,
@@ -20,7 +20,7 @@ struct Opt {
     /// Key
     #[structopt(name = "KEY")]
     key: String,
-    
+
     /// Input file path
     #[structopt(name = "INPUT")]
     input: PathBuf,
@@ -31,7 +31,7 @@ struct Opt {
 }
 
 fn main() -> Result<(), ExitFailure> {
-    let opt = Opt::from_args();
+    let opt = CliOpt::from_args();
 
     // Read input file into a string
     let input_file_contents = fs::read_to_string(&opt.input.as_path())
@@ -45,7 +45,7 @@ fn main() -> Result<(), ExitFailure> {
     let key_bytes_resized = crypt::resize_key(key_bytes, input_bytes.len());
 
     // Perform XOR encryption
-    let output_file_contents = crypt::do_xor(&input_bytes, &key_bytes_resized);
+    let output_file_contents = crypt::do_xor(&input_bytes, &key_bytes_resized).unwrap();
 
     // Save output string to file
     fs::write(&opt.output.as_path(), output_file_contents)
